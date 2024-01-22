@@ -1,0 +1,3 @@
+/home/btech/22/abhinav.pangaria22b/OS_LAB/cmake-build-debug/CMakeFiles/OS_LAB.dir
+/home/btech/22/abhinav.pangaria22b/OS_LAB/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/btech/22/abhinav.pangaria22b/OS_LAB/cmake-build-debug/CMakeFiles/rebuild_cache.dir

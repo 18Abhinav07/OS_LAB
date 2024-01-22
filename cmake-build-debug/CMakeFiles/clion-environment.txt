@@ -1,0 +1,3 @@
+ToolSet: 1.0 (local)Options: 
+
+Options:-DCMAKE_MAKE_PROGRAM=/home/btech/22/abhinav.pangaria22b/.cache/JetBrains/RemoteDev/dist/c041d69a96617_CLion-2023.3.2/bin/ninja/linux/x64/ninja

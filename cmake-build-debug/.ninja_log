@@ -1,0 +1,7 @@
+# ninja log v5
+1	59	1705863440054883032	CMakeFiles/OS_LAB.dir/Assignment_1/question2.c.o	3876f1b62a4fbc5a
+1	51	1705863440046883032	CMakeFiles/OS_LAB.dir/Assignment_1/question4.c.o	f3d5ee3f6967fd0a
+0	43	1705863440038883032	CMakeFiles/OS_LAB.dir/Assignment_1/question1.c.o	5bd6150761e56040
+1	55	1705863440046883032	CMakeFiles/OS_LAB.dir/Assignment_1/question3.c.o	ad5cb7470db0c4d3
+1	48	1705863440046883032	CMakeFiles/OS_LAB.dir/Assignment_1/question5.c.o	17304498f1d03ae1
+59	80	1705863440087883030	OS_LAB	c3eb8c042084b48a
