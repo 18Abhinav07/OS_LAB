@@ -1,1 +1,1 @@
-The count of non alphabetic character is : 2
+The count of non alphabetic character is : 8

@@ -9,4 +9,6 @@ add_executable(OS_LAB
         Assignment_1/question3.c
         Assignment_1/question4.c
         Assignment_1/question5.c
-        Assignment_1/question5_extra.c)
+        Assignment_1/question5_extra.c
+        Assignment_1/question5_EXTRA_2.c
+        OS_LAB_TEST_1.c)

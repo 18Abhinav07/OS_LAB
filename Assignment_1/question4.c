@@ -8,7 +8,6 @@ int main() {
 
 
 
-
 // // using dup.
 
 //    int fd = dup(STDOUT_FILENO);

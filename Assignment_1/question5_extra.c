@@ -1,116 +1,119 @@
-//
-// Created by abhinav.pangaria22b on 1/15/24.
-//
-
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/wait.h>
 #include <unistd.h>
-#include <signal.h>
-#include <setjmp.h>
+#include <sys/wait.h>
+#include <stdlib.h>
 
-jmp_buf buffer;
+int main() {
+    int pipe1[2], pipe2[2];
 
-void kill_alarm(int pid) {
-    fprintf(stderr, "Killing child, abnormal exit..\n");
-    kill(getpid(), SIGKILL);
-    exit(0);
-}
-
-int main(int argc, char **argv) {
-
-    if (argc == 2) {
-        int fd_in = open(argv[1], 0644);
-        if (fd_in == -1) {
-            perror("Cannot read file1");
-        }
-        dup2(fd_in, STDIN_FILENO);
-
-    } else if (argc == 3) {
-        int fd_in = open(argv[1], 0644);
-        if (fd_in == -1) {
-            perror("Cannot read file1");
-        }
-
-        int fd_out = creat(argv[2], 0644);
-        if (fd_out == -1) {
-            perror("Cannot creat file2");
-        }
-
-//        // Redirecting the file descriptors.
-//
-//        close(STDIN_FILENO);
-//        if (dup(fd_in) == -1) {
-//            perror("error in dup");
-//            return 1;
-//        }
-//
-//
-//        if (dup2(fd_out, STDOUT_FILENO) == -1) {
-//            perror("error in dup2");
-//            return 1;
-//        }
-//
-//
-//        char buffer[1000];
-//        ssize_t n1 = read(STDIN_FILENO, buffer, 100 - 1);
-//        if (n1 == -1) {
-//            perror("read error");
-//            return 1;
-//        }
-//        buffer[n1] = '\0';
-//        printf("Read text from file 1 displayed in file 2.: %s\n", buffer);
-
-
-        // Pipe and forking.
-
-        int pipefd[2];
-        if (pipe(pipefd) == -1) {
-            perror("pipe");
-            return 1;
-        }
-
-        pid_t child1 = fork();
-
-        setjmp(buffer);
-
-        if (child1 != 0) {
-            pid_t child2 = fork();
-            signal(SIGALRM, kill_alarm);
-            alarm(1);
-
-            if (child2 != 0) {
-                close(pipefd[1]);
-//                sleep(10);
-                wait(NULL);
-                wait(NULL);
-                exit(0);
-            } else {
-                dup2(fd_in, STDIN_FILENO);
-                dup2(pipefd[1], STDOUT_FILENO);
-                if (execl("./convert.out", "convert", (char *) NULL) == -1) {
-                    fprintf(stderr, "error in execl.\n");
-                    return 1;
-                }
-                fprintf(stderr, "successfully run convert.");
-            }
-
-        } else {
-            close(pipefd[1]);
-            dup2(pipefd[0], STDIN_FILENO);
-            dup2(fd_out, STDOUT_FILENO);
-
-            if (execl("./count.out", "count", (char *) NULL) ==
-                -1) {
-                fprintf(stderr, "error in execl.\n");
-                return 1;
-            }
-            fprintf(stderr, "successfully run count.");
-
-        }
-        longjmp(buffer, 1);
+    // Creating the needed pipes.
+    if (pipe(pipe1) == -1 || pipe(pipe2) == -1) {
+        // if pipe fails exit the code.
+        perror("Pipe creation failed. Exiting the program with status (1).\n");
+        return 1;
     }
-    fprintf(stderr, "Normal Exit.\n");
+
+    // Creating the needed child processes for the parent.
+    pid_t child_process1;
+    child_process1 = fork();
+    if (child_process1 == -1) {
+        perror("Forking the first child resulted in an error. Exiting the program.\n");
+        return 1;
+    } else if (child_process1 == 0) {
+        // if successful in making the child process, then this process will just write to the
+        // pipe 1 so that it can pass the read characters to the second process.
+        // we will have to close the other read and write ends as they can give sigpipe error.
+        close(pipe1[0]);
+        close(pipe2[0]);
+        close(pipe2[1]);
+
+        char ch;
+//        dup2(pipe1[1], STDOUT_FILENO);
+        while (1) {
+            // Get input character from user
+
+            printf("Enter a character. To end the input regime provide EOF (CTRL + D) in linux systems. (CTRL + Z)"
+                   "in windows system.\n");
+            if ((ch = getchar()) != EOF) {
+                putchar(ch);
+            } else {
+                putchar(EOF);
+                break;
+            }
+
+
+
+//            // Write the read  character to pipe1 so that the next process can read them from the first pipe.
+//            if (write(pipe1[1], &ch, 1) != 1) {
+//                perror("Writing to the first pipe resulted in an error. Exiting the code segment. PIPE 1 FAILED.\n");
+//                exit(1);
+//            }
+        }
+
+        close(pipe1[1]);  // Close write end of pipe1
+        _exit(0);  // Terminate child process 1
+    }
+
+    pid_t child_process2 = fork();
+    if (child_process2 == -1) {
+        perror("Forking the second child resulted in an error. Exiting the program.\n");
+        return 1;
+    } else if (child_process2 == 0) {  // Child process 2
+        close(pipe1[1]);  // Close unused write end of pipe1 as the process 1 has already done the writing.
+        close(pipe2[0]);  // Close unused read end of pipe2 as it is not needed yet.
+
+        char ch;
+        while (1) {
+            // Read character from pipe1
+            if (read(pipe1[0], &ch, 1) != 1) {
+                break;  // EOF or error
+            }
+
+            // Increment character
+            ch++;
+
+            // Write incremented character to pipe2
+            if (write(pipe2[1], &ch, 1) != 1) {
+                perror("Writing to the second pipe resulted in an error. Exiting the code segment. PIPE 2 FAILED.\n");
+                exit(1);
+            }
+        }
+
+        close(pipe1[0]);  // Close read end of pipe1 as the written character by child 1 in pipe 1 have been read.
+        close(pipe2[1]);  // Close write end of pipe2 as the incremented characters are written to pipe2.
+        _exit(0);  // Terminate child process 2
+    }
+
+    // Parent process
+    close(pipe1[0]);  // Close unused read end of pipe1
+    close(pipe1[1]);  // Close unused write end of pipe1
+
+    char ch;
+    while (1) {
+        // Read character from pipe2
+        if (read(pipe2[0], &ch, 1) != 1) {
+            break;  // EOF or error
+        }
+        char org_ch = ch;
+        // Decrement character
+        ch--;
+
+        // Print decremented character
+        printf("Received the char '%c' and decrementing the character gives: %c\n", org_ch, ch);
+    }
+
+    // Terminate child processes
+//    kill(child_process1, SIGTERM);
+//    kill(child_process2, SIGTERM);
+//    waitpid(child_process1, NULL, 0);
+//    waitpid(child_process2, NULL, 0);
+
+    close(child_process1);
+    close(child_process2);
+    wait(NULL);
+    printf("Child processes terminated. Finishing the parent processes.\n");
+
+    close(pipe2[0]);  // Close read end of pipe2
+
+    return 0;
 }
