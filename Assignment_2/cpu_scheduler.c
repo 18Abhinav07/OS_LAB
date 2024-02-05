@@ -3,6 +3,7 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 typedef struct {
     char *process_name;
@@ -24,7 +25,7 @@ void readProcessTable(char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Unable to open this file.\n");
-        return;
+        exit(1);
     }
 
 
@@ -226,26 +227,28 @@ int main(int argc, char *argv[]) {
     readProcessTable(argv[1]);
     printProcessTable();
     int choice = 0;
-    printf("Select the scheduling algorithm [1,2,3 or 4]:\n"
-           "1. First Come First Served. (FCFS)\n"
-           "2. Round Robin. (RR)\n"
-           "3. Shortest Remaining Burst First. (SRBF)\n"
-           "4. Exit.\n");
+    do {
+        printf("Select the scheduling algorithm [1,2,3 or 4]:\n"
+               "1. First Come First Served. (FCFS)\n"
+               "2. Round Robin. (RR)\n"
+               "3. Shortest Remaining Burst First. (SRBF)\n"
+               "4. Exit.\n");
 
-    scanf("%d", &choice);
-    int c = 0;
-    switch (choice) {
-        case 1:
-            FCFS();
-            break;
-        case 2:
-            RR();
-            break;
-        case 3:
-            SRBF();
-            break;
-        case 4:
-            printf("Exiting.\n");
-            return 1;
-    }
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                FCFS();
+                break;
+            case 2:
+                RR();
+                break;
+            case 3:
+                SRBF();
+                break;
+            case 4:
+                printf("Exiting.\n");
+                return 1;
+        }
+    } while (choice != 4);
+
 }
