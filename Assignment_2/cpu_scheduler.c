@@ -20,7 +20,6 @@ int current_time = 0;
 
 
 Process *processTable[MAX_PROCESS];
-
 void readProcessTable(char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -43,44 +42,44 @@ void readProcessTable(char *filename) {
     return;
 }
 
-void printProcessTable() {
+void printProcessTable(FILE *res) {
     int i = 0;
     for (i; i < TOTAL_PROCESS; i++) {
-        printf("process_name: %s, arrival_time: %d, cpu_burst_time: %d\n", processTable[i]->process_name,
+        fprintf(res,"process_name: %s, arrival_time: %d, cpu_burst_time: %d\n", processTable[i]->process_name,
                processTable[i]->arrival_time,
                processTable[i]->cpu_burst_time);
     }
 }
 
-void printStatistics() {
+void printStatistics(FILE *res) {
     int i = 0;
     float avg_turn_around_time = 0.00;
     float avg_wait_time = 0.00;
-    printf("%-20s", "Turnaround Times:");
+    fprintf(res,"%-20s", "Turnaround Times:");
     for (i; i < TOTAL_PROCESS; i++) {
-        printf("%s[%d], ", processTable[i]->process_name, processTable[i]->turn_around_time);
+        fprintf(res,"%s[%d], ", processTable[i]->process_name, processTable[i]->turn_around_time);
         avg_turn_around_time += processTable[i]->turn_around_time;
     }
-    printf("\n");
+    fprintf(res,"\n");
 
     i = 0;
-    printf("%-20s", "Wait Times:");
+    fprintf(res,"%-20s", "Wait Times:");
     for (i; i < TOTAL_PROCESS; i++) {
-        printf("%s[%d], ", processTable[i]->process_name, processTable[i]->wait_time);
+        fprintf(res,"%s[%d], ", processTable[i]->process_name, processTable[i]->wait_time);
         avg_wait_time += processTable[i]->wait_time;
     }
-    printf("\n");
+    fprintf(res,"\n");
 
-    printf("Average turnaround time: %.2f\nAverage wait time: %.2f \n", (avg_turn_around_time / (TOTAL_PROCESS)),
+    fprintf(res,"Average turnaround time: %.2f\nAverage wait time: %.2f \n", (avg_turn_around_time / (TOTAL_PROCESS)),
            (avg_wait_time / (TOTAL_PROCESS)));
 }
 
-void FCFS() {
+void FCFS(FILE *res) {
     current_time = 0;
     int i = 0;
-    printf("----------------------------------------------------\n");
-    printf("         FIRST COME FIRST SERVE SCHEDULING.\n");
-    printf("----------------------------------------------------\n");
+    fprintf(res,"----------------------------------------------------\n");
+    fprintf(res,"         FIRST COME FIRST SERVE SCHEDULING.\n");
+    fprintf(res,"----------------------------------------------------\n");
     for (i; i < TOTAL_PROCESS; i++) {
         int cpu_time = processTable[i]->cpu_burst_time;
         char *name = processTable[i]->process_name;
@@ -89,15 +88,15 @@ void FCFS() {
         processTable[i]->end_time = current_time + cpu_time;
         processTable[i]->turn_around_time = processTable[i]->end_time - processTable[i]->arrival_time;
 
-        printf("[%2d - %-2d] %5s running.\n", current_time, processTable[i]->end_time, name);
+        fprintf(res,"[%2d - %-2d] %5s running.\n", current_time, processTable[i]->end_time, name);
         current_time += cpu_time;
     }
-    printStatistics();
+    printStatistics(res);
     return;
 }
 
 
-void RR() {
+void RR(FILE *res) {
 
     int quantum = 0;
     printf("Please enter a time quantum.\n");
@@ -110,9 +109,9 @@ void RR() {
     for (; i < TOTAL_PROCESS; i++) {
         cpuBurst[i] = processTable[i]->cpu_burst_time;
     }
-    printf("----------------------------------------------------\n");
-    printf("               ROUND ROBIN SCHEDULING..\n");
-    printf("----------------------------------------------------\n");
+    fprintf(res,"----------------------------------------------------\n");
+    fprintf(res,"               ROUND ROBIN SCHEDULING..\n");
+    fprintf(res,"----------------------------------------------------\n");
 
     while (1) {
         int i = 0;
@@ -125,7 +124,7 @@ void RR() {
             }
 
             char *name = processTable[i]->process_name;
-            printf("[%2d - %-2d] %5s running.\n", current_time,
+            fprintf(res,"[%2d - %-2d] %5s running.\n", current_time,
                    ((cpuBurst[i] > quantum) ? (current_time + quantum) : (current_time + cpuBurst[i])), name);
 
             if (cpuBurst[i] > quantum) {
@@ -151,10 +150,10 @@ void RR() {
             break;
         }
     }
-    printStatistics();
+    printStatistics(res);
 }
 
-void SRBF() {
+void SRBF(FILE *res) {
 
     int quantum = 0;
     printf("Please enter a time quantum.\n");
@@ -167,9 +166,9 @@ void SRBF() {
     for (; p < TOTAL_PROCESS; p++) {
         cpuBurst[p] = processTable[p]->cpu_burst_time;
     }
-    printf("----------------------------------------------------\n");
-    printf("       SHORTEST REMAINING BURST FIRST SCHEDULING..\n");
-    printf("----------------------------------------------------\n");
+    fprintf(res,"----------------------------------------------------\n");
+    fprintf(res,"       SHORTEST REMAINING BURST FIRST SCHEDULING..\n");
+    fprintf(res,"----------------------------------------------------\n");
 
     while (1) {
         int t = 0;
@@ -197,10 +196,10 @@ void SRBF() {
             break;
         }
 
-        printf("Process %s , cpu Burst %d", processTable[i]->process_name, cpuBurst[i]);
+        fprintf(res,"Process %s , cpu Burst %d", processTable[i]->process_name, cpuBurst[i]);
 
         char *name = processTable[i]->process_name;
-        printf("[%2d - %-2d] %5s running.\n", current_time,
+        fprintf(res,"[%2d - %-2d] %5s running.\n", current_time,
                ((cpuBurst[i] > quantum) ? (current_time + quantum) : (current_time + cpuBurst[i])), name);
 
         if (cpuBurst[i] > quantum) {
@@ -215,17 +214,20 @@ void SRBF() {
             processTable[i]->wait_time = processTable[i]->turn_around_time - processTable[i]->cpu_burst_time;
         }
     }
-    printStatistics();
+    printStatistics(res);
 }
 
 int main(int argc, char *argv[]) {
+
+    FILE *res = fopen("result.txt","a");
+
     if (argc <= 1) {
         printf("Please provide a input process table as a txt file.\n");
         return 1;
     }
 
     readProcessTable(argv[1]);
-    printProcessTable();
+    printProcessTable(res);
     int choice = 0;
     do {
         printf("Select the scheduling algorithm [1,2,3 or 4]:\n"
@@ -237,13 +239,13 @@ int main(int argc, char *argv[]) {
         scanf("%d", &choice);
         switch (choice) {
             case 1:
-                FCFS();
+                FCFS(res);
                 break;
             case 2:
-                RR();
+                RR(res);
                 break;
             case 3:
-                SRBF();
+                SRBF(res);
                 break;
             case 4:
                 printf("Exiting.\n");
