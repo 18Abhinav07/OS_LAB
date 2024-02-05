@@ -97,6 +97,12 @@ build CMakeFiles/OS_LAB.dir/OS_LAB_TEST_1.c.o: C_COMPILER__OS_LAB_unscanned_Debu
   OBJECT_DIR = CMakeFiles/OS_LAB.dir
   OBJECT_FILE_DIR = CMakeFiles/OS_LAB.dir
 
+build CMakeFiles/OS_LAB.dir/Assignment_2/cpu_scheduler.c.o: C_COMPILER__OS_LAB_unscanned_Debug /home/btech/22/abhinav.pangaria22b/OS_LAB/Assignment_2/cpu_scheduler.c || cmake_object_order_depends_target_OS_LAB
+  DEP_FILE = CMakeFiles/OS_LAB.dir/Assignment_2/cpu_scheduler.c.o.d
+  FLAGS = -g -std=gnu11
+  OBJECT_DIR = CMakeFiles/OS_LAB.dir
+  OBJECT_FILE_DIR = CMakeFiles/OS_LAB.dir/Assignment_2
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target OS_LAB
@@ -105,7 +111,7 @@ build CMakeFiles/OS_LAB.dir/OS_LAB_TEST_1.c.o: C_COMPILER__OS_LAB_unscanned_Debu
 #############################################
 # Link the executable OS_LAB
 
-build OS_LAB: C_EXECUTABLE_LINKER__OS_LAB_Debug CMakeFiles/OS_LAB.dir/Assignment_1/question1.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question2.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question3.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question4.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5_extra.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5_EXTRA_2.c.o CMakeFiles/OS_LAB.dir/OS_LAB_TEST_1.c.o
+build OS_LAB: C_EXECUTABLE_LINKER__OS_LAB_Debug CMakeFiles/OS_LAB.dir/Assignment_1/question1.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question2.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question3.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question4.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5_extra.c.o CMakeFiles/OS_LAB.dir/Assignment_1/question5_EXTRA_2.c.o CMakeFiles/OS_LAB.dir/OS_LAB_TEST_1.c.o CMakeFiles/OS_LAB.dir/Assignment_2/cpu_scheduler.c.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/OS_LAB.dir
   POST_BUILD = :
