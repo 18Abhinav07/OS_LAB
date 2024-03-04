@@ -3,11 +3,12 @@
 #include <unistd.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 jmp_buf env;
 
 void handle_alarm(int sig) {
-    longjmp(env, 1);  // Jump back to setjmp with error code
+    longjmp(env, 1);  
 }
 
 // Function to check if a number is prime
@@ -24,6 +25,10 @@ int main() {
 
     printf("Enter three numbers: ");
     scanf("%d %d %d", &x, &y, &z);
+    if(z == 0){
+      printf("Calculations cannot be performed as there is no time to execute the given query.\n");
+      exit(0);
+    }
 
     if (fork() == 0) {  
         for (int i = x; i <= y; i++) {
@@ -32,20 +37,19 @@ int main() {
             }
         }
         printf("\n");
-        exit(0);  // Child terminates
-    } else {  // Parent process
-        signal(SIGALRM, handle_alarm);  // Set alarm handler
-        alarm(z);  // Set alarm for z seconds
+        exit(0);  
+    } else {  
+        signal(SIGALRM, handle_alarm);  
+        alarm(z); 
 
         int result = setjmp(env);
         if (result == 0) {
-            // Wait for child to finish
+           
             wait(NULL);
             printf("All the prime numbers printed\n");
         } else {
-            // Alarm triggered
-            kill(0, SIGKILL);  // Kill all child processes
             printf("Calculation is taking too much time\n");
+            kill(0, SIGKILL);   
         }
     }
 
