@@ -20,7 +20,7 @@ void* multiply(void* arg) {
     struct arguments *args = (struct arguments*)arg;
     int row = args->row;
     int col = args->col;
-    int sum = 0;
+    int sum = 0; 
 
     for (int i = 0; i < M; i++) {
         sum += args->mat1[row][i] * args->mat2[i][col];
@@ -43,9 +43,9 @@ int main() {
             struct arguments *args = (struct arguments*)malloc(sizeof(struct arguments));
             args->row = i;
             args->col = j;
-            args->mat1 = mat1;
-            args->mat2 = mat2;
-            args->result = result;
+            args->mat1 = &mat1;
+            args->mat2 = &mat2;
+            args->result = &result;
 
             pthread_create(&threads[i * P + j], NULL, multiply, (void*)args);
         }
